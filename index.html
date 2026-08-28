@@ -50,7 +50,7 @@ body{
 
 /* layout */
 .stage{display:grid; grid-template-columns:1fr; gap:26px;}
-@media (min-width:940px){ .stage{grid-template-columns:150px minmax(0,1fr); gap:44px;} }
+@media (min-width:940px){ .stage{grid-template-columns:190px minmax(0,1fr); gap:44px;} }
 
 /* rail */
 .rail{border-bottom:1px solid var(--hair); padding-bottom:16px;}
@@ -104,6 +104,22 @@ button{font-family:"Noto Sans TC",sans-serif; font-size:13.5px; color:var(--ink)
 button:hover:not(:disabled){border-color:var(--accent); color:var(--accent);}
 button:disabled{opacity:.32; cursor:default;}
 button:focus-visible, summary:focus-visible, .toc a:focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+
+/* 跳號盤 */
+.jump{margin-top:22px;}
+.jump .jh{font-family:"Noto Sans TC",sans-serif; font-size:11px; color:var(--muted);
+  letter-spacing:.16em; margin:0 0 9px;}
+.jrow{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:5px;}
+@media (min-width:940px){ .jrow{justify-content:flex-end;} }
+.jump a{display:flex; align-items:center; justify-content:center; width:24px; height:24px;
+  text-decoration:none; font-family:"EB Garamond",Georgia,serif; font-size:13px;
+  font-variant-numeric:tabular-nums; color:var(--muted);
+  border:1px solid var(--hair); background:var(--surface);
+  transition:border-color .15s,color .15s;}
+.jump a:hover{border-color:var(--accent); color:var(--accent);}
+.jump a.seen{color:var(--ink); border-color:var(--rule);}
+.jump a[aria-current="true"]{background:var(--accent); border-color:var(--accent);
+  color:var(--surface); font-weight:600;}
 
 /* toc */
 .toc{margin-top:64px; border-top:1px solid var(--rule); padding-top:24px; max-width:640px;}
@@ -165,6 +181,7 @@ mark{background:var(--hl); color:inherit; padding:1px 0; cursor:pointer; border-
       <div class="folio" id="folio">01<small id="oftotal"></small></div>
       <div class="railgrp" id="railgrp"></div>
       <div class="bar"><i id="bar"></i></div>
+      <nav class="jump" id="jump" aria-label="跳到某一則"></nav>
     </aside>
     <main>
       <article id="art"></article>
@@ -187,7 +204,8 @@ mark{background:var(--hl); color:inherit; padding:1px 0; cursor:pointer; border-
     <p><strong>這是什麼。</strong>二十一個哲學概念，每一則講清楚三件事：誰提出的、他當時在反對誰、這一條的限度在哪裡。每五則配一則回收，把那一組串起來。</p>
     <p><strong>為什麼要講「他在反對誰」。</strong>一個概念脫離了它反對的東西，就只剩下一個名詞。名詞背起來很快，用起來沒有力氣。</p>
     <p><strong>每一則最下面有出處。</strong>年份、書名、章節、中譯本狀況都在裡面，還會寫明哪些是查證所得、哪些是我的判斷、哪些查不到。有三個概念查不到提出者，我照實寫，沒有硬安一個人。</p>
-    <p><strong>怎麼用。</strong>一次讀一則，做完最後那個動作就關掉。進度會記在你的瀏覽器裡。</p>
+    <p><strong>怎麼用。</strong>一次讀一則，做完最後那個動作就關掉。進度會記在你的瀏覽器裡，下次打開就停在同一則。</p>
+    <p><strong>要跳到哪一則都可以。</strong>左邊那排號碼點下去就到，滑鼠停著會顯示標題。讀過的號碼顏色會變深，現在這則是實心的。網址結尾加上井字號與數字也行，例如結尾寫 12 就直接開第十二則，可以存成書籤。</p>
     <p><strong>可以標記。</strong>選取任何一段文字會跳出「標記」，標起來還能再寫一段自己的想法。頁面下方的「我的標記」可以一鍵複製全部，貼到任何地方接著討論。標記只存在你自己的瀏覽器裡，不會傳到任何地方。</p>
   </div>
 </div>
@@ -205,14 +223,14 @@ const GROUPS = {
 const DATA = [
 
 {g:1, t:"神學算不算一門科學",
- ext:[{k:"讀",t:"《神學大全》第一集第一題，全題只有十節",n:"線上全文免費，summatheologiae.studium-piusx.org。先讀第二節，再回頭讀第一節看他為什麼要問這串。"}],
+ ext:[{k:"讀",t:"《神學大全》第一集第一題，全題只有十節",n:"繁中全譯本十九冊不分售，兩萬元，洽聞道出版社。碧岳學社的網站只有各冊摘要，沒有全文；免費全文只有拉丁文與英文。先讀第二節，再回頭讀第一節看他為什麼要問這串。"}],
   who:"阿奎納",
  open:["中醫是不是科學。這一組要拆的就是這個問題。","但在拆之前，我們先往回走七百年。","因為這個問題有人問過，而且他的答案跟現代人完全不同。"],
  answer:["阿奎納問的是：聖教學算不算一門 scientia。","要看懂這一題，先得知道那個詞在當時的意思。","它指的是嚴格的、可證明的知識。從自明的第一原理出發，一路推到結論，而且要說得出為什麼，不只是知道事情就是這樣。","算術跟幾何屬於這種知識，因為它們的起點靠理智本身就看得出來。"],
- against:["問題來了。聖教學的起點是啟示，不是自明的原理。那它憑什麼算數。","他的解法叫從屬科學。","有些學問的原理不是自己證出來的，是從更高一層的學問借來的。音樂的原理借自算術，透視法的原理借自幾何。","音樂家接受數學家給的原理，並不因此就不算一門學問。","同理，聖教學的原理來自神與蒙福者的知識，所以它是一門從屬的學問。","這個解法在當時就被吵過。董思高不接受這套從屬關係，這是中世紀一場真實的論戰。"],
+ against:["問題來了。聖教學的起點是啟示，不是自明的原理。那它憑什麼算數。","他的解法叫從屬科學。","有些學問的原理不是自己證出來的，是從更高一層的學問借來的。音樂的原理借自算術，透視法的原理借自幾何。","音樂家接受數學家給的原理，並不因此就不算一門學問。","同理，聖教學的原理來自神與蒙福者的知識，所以它是一門從屬的學問。","這個解法在當時就被吵過。董思高不接受，他的理由是知識能不能成立，只看你自己的認知能力與對象，不看別人有沒有擁有它。","他說這就像我宣稱自己懂幾何學，理由是約翰懂，而我相信他懂。","後來加耶當替阿奎納回話。他說人性裡本來就有一種可以被提升的能力，正是那個能力讓走在路上的人與已經蒙福的人接得起來。"],
  yours:["這一則的用處是提醒一件事。","「科學」這個詞的意思換過，而且換得很徹底。","今天的意思大約成形於十七世紀之後。阿奎納用的是亞里斯多德那一套，兩者差很遠。","所以有人問「這算不算科學」的時候，他其實在用某一個時代的定義，而他多半不知道還有別的定義。","接下來四則講的是二十世紀那四把尺。這一則是為了讓你知道，那四把不是全部。"],
  act:"今天聽到「科學」這兩個字，在心裡問一次：這裡的科學指的是哪一種。",
- src:"阿奎納（Thomas Aquinas，1225-1274）。《神學大全》第一集第一題第二節，拉丁原題 utrum sacra doctrina sit scientia。<br><br><strong>繁中有全譯本，而且有免費線上全文。</strong>碧岳學社與中華道明會，2008 年，全十九冊，含索引與導讀各一冊。譯者包括劉俊餘、陳家華、高旭東、周克勤、胡安德、王守身。天主教台南教區聞道出版社有售，線上全文見 summatheologiae.studium-piusx.org。<br><br>從屬科學原文為 scientia subalternata。董思高（Duns Scotus）不接受這套從屬關係。<br><br>scientia 的意思是嚴格的、可證明的知識，從真實且直接的第一原理出發，知道原因而不只知道事實。這個定義來自亞里斯多德《後分析篇》。<br><br>來源：New Advent 的 Summa 全文、aquinas.cc、SEP 的 Aquinas 條目與 Medieval Theories of Demonstration 條目、To Be a Thomist、漢語基督教研究網、聞道出版社。"},
+ src:"阿奎納（Thomas Aquinas，1225-1274）。《神學大全》第一集第一題第二節，拉丁原題 utrum sacra doctrina sit scientia。<br><br><strong>繁中有全譯本，但沒有免費線上全文。</strong>碧岳學社與中華道明會，2008 年，全十九冊，含索引與導讀各一冊。譯者包括劉俊餘、陳家華、高旭東、周克勤、胡安德、王守身。定價兩萬元且不分售，洽天主教台南教區聞道出版社。summatheologiae.studium-piusx.org 只有各冊精華與摘要，2026-08-28 實查確認，沒有全文。免費的全文只有拉丁文與英文，見 New Advent。<br><br>從屬科學原文為 scientia subalternata。董思高（Duns Scotus）不接受這套從屬關係。<br><br>scientia 的意思是嚴格的、可證明的知識，從真實且直接的第一原理出發，知道原因而不只知道事實。這個定義來自亞里斯多德《後分析篇》。<br><br>來源：New Advent 的 Summa 全文、aquinas.cc、SEP 的 Aquinas 條目與 Medieval Theories of Demonstration 條目、To Be a Thomist、漢語基督教研究網、聞道出版社。"},
 
 {g:1, t:"先問這句話有沒有意義",
  ext:[{k:"敲打",t:"挑三句你自己相信的話，用艾耶爾的兩條路各判一次",n:"判完會發現大部分落在第三類。那不是壞事，重點是你知道它落在哪。"}],
@@ -238,18 +256,18 @@ const DATA = [
  ext:[{k:"讀",t:"孔恩《科學革命的結構》遠流五十週年修訂版",n:"二十六則裡最容易買到的繁中原典。傅大為的導論值得先讀。"}],
   who:"孔恩",
  open:["第三個人不看句子，改看人。","孔恩問的是：這一群人平常在做什麼事？","他的答案讓很多人不舒服，因為它把科學講得很像一個行業。"],
- answer:["他說科學家絕大部分的時間不在推翻理論，而在解謎。","解謎的意思是，拿現有的理論去套那些看起來對不上的現象，讓理論的解釋力越來越強。","這一群人共享的基本觀點、做事方法、一整套內部術語，他叫做範式。範式的功能是供給謎題，同時供給解謎的工具。","所以他的劃界標準是：這個圈子有沒有解謎的傳統。天文學有，占星術沒有。"],
+ answer:["他說科學家絕大部分的時間不在推翻理論，而在解謎。","解謎的意思是，拿現有的理論去套那些看起來對不上的現象，讓理論的解釋力越來越強。","這一群人共享的基本觀點、做事方法、一整套內部術語，他叫做典範。你也會看到有人譯作範式，指的是同一個東西。","典範的功能是供給謎題，同時供給解謎的工具。","所以他的劃界標準是：這個圈子有沒有解謎的傳統。天文學有，占星術沒有。"],
  against:["他的對手是波普爾。","波普爾說科學靠不斷被推翻而前進，孔恩說歷史不是這樣走的。","你做實驗發現資料跟公式對不上，第一個懷疑的不會是愛因斯坦，是你自己。","最好的例子是暗物質。觀測顯示宇宙裡有一大批東西，廣義相對論解釋不了。科學家沒有推翻廣義相對論，而是給那個缺口取了名字，暫時擱著。","要小心一件事。孔恩描述的是科學家實際的行為，這不代表他認可那種行為。把描述讀成規範，是誤讀他最常見的方式。"],
- yours:["任何做久了的圈子都有範式。","音響圈有，桌球圈有，咖啡圈也有。共享的預設、做事的方法、一整套內部術語。","新人提出的建議之所以難被接受，常常跟內容好壞無關。","它落在現有範式外面，聽的人手上沒有現成的位置可以放它。"],
+ yours:["任何做久了的圈子都有典範。","音響圈有，桌球圈有，咖啡圈也有。共享的預設、做事的方法、一整套內部術語。","新人提出的建議之所以難被接受，常常跟內容好壞無關。","它落在現有典範外面，聽的人手上沒有現成的位置可以放它。"],
  act:"今天觀察一個你熟的圈子，找出所有人共享、卻沒有人說出口的那一組預設。",
- src:"孔恩（Thomas Kuhn，1922-1996），美國科學史家與科學哲學家。<br><br>《科學革命的結構》，遠流，五十週年紀念修訂版，2021 年 1 月，程樹德、傅大為、王道還合譯，附 Ian Hacking 導讀與傅大為導論。原書 The Structure of Scientific Revolutions，芝加哥大學出版社，1962。<strong>這是全部二十五則裡最容易買到繁中版的一本。</strong><br><br>暗物質那個例子是常態科學的教科書級案例。廣義相對論在測得到的範圍內極為成功，同時已知不完備：它與量子力學不相容，在奇異點失效，暗物質與暗能量約佔宇宙質能九成五而它解釋不了。<br><br>來源：SEP 的 Kuhn 條目、IEP、EBSCO；廣義相對論的檢驗與極限查自 arXiv 與 2026 年 1 月 Cornell Chronicle 對 GW250114 的報導。「範式在書裡有二十多種用法」這個常見說法本輪未查證，故未寫入。"},
+ src:"孔恩（Thomas Kuhn，1922-1996），美國科學史家與科學哲學家。<br><br>《科學革命的結構》，遠流，五十週年紀念修訂版，2021 年 1 月，程樹德、傅大為、王道還合譯，附 Ian Hacking 導讀與傅大為導論。原書 The Structure of Scientific Revolutions，芝加哥大學出版社，1962。<strong>這是全部二十五則裡最容易買到繁中版的一本。</strong><br><br>暗物質那個例子是常態科學的教科書級案例。廣義相對論在測得到的範圍內極為成功，同時已知不完備：它與量子力學不相容，在奇異點失效，暗物質與暗能量約佔宇宙質能九成五而它解釋不了。<br><br>來源：SEP 的 Kuhn 條目、IEP、EBSCO；廣義相對論的檢驗與極限查自 arXiv 與 2026 年 1 月 Cornell Chronicle 對 GW250114 的報導。「典範在書裡有二十多種用法」這個常見說法本輪未查證，故未寫入。"},
 
 {g:1, t:"先問這條線憑什麼存在",
- ext:[{k:"讀",t:"《反對方法》時報 1996 周昌忠譯",n:"繁中有，伽利略那一段是全書最值得讀的。"},{k:"看",t:"大問題 Dialectic《中醫是偽科學？我們首先需理解：什麼是科學？》",n:"二十四分鐘，四人光譜的科普版。注意它把孔恩推到相對主義那一步，那是誤讀，見第二十四則。"}],
+ ext:[{k:"讀",t:"《反對方法》時報 1996 周昌忠譯",n:"繁中有，伽利略那一段是全書最值得讀的。"},{k:"看",t:"大問題 Dialectic 頻道的科學哲學系列",n:"這一組四個人的科普版。2026-08-28 查證無法確認確切影片標題，所以只給頻道，不給篇名。看這類影片要留意一件事：它們常把孔恩推到相對主義那一步，那是誤讀，見第二十五則。"}],
   who:"費耶阿本德",
  open:["第四個人不回答那個問題。他反問問問題的人。","你憑什麼認為科學有一條界線？"],
  answer:["我們先看一件事。","伽利略用望遠鏡證明地球會動，這是科學史上最有名的勝利之一。","可是你想想，那時候他手上有望遠鏡的原理嗎？沒有。他不知道那個管子為什麼看得見遠方。","當時拿得到的觀測資料，其實對他不利。反對他的人也不是笨蛋，那些人守的正是當時公認的規矩。","那伽利略靠什麼贏？靠說服，靠宣傳，靠他願意跟現有資料唱反調。"],
- against:["他反對前面三位全部。","對艾耶爾和波普爾，他說驗證跟推翻都預設了中性的觀察，而中性的觀察不存在。你看見什麼、怎麼描述它，都被你已經相信的理論決定了。","對孔恩，他說範式轉換的實際過程，並不像危機累積那樣有秩序。","於是他丟出那句被誤讀了幾十年的話：唯一不阻礙進步的原則是，怎樣都行。","它聽起來像在說什麼都可以，實際上是一句警告。他要說的是，沒有哪一條方法規則在所有情況下都有效。"],
+ against:["他反對前面三位全部。","對艾耶爾和波普爾，他說驗證跟推翻都預設了中性的觀察，而中性的觀察不存在。你看見什麼、怎麼描述它，都被你已經相信的理論決定了。","對孔恩，他說典範轉移的實際過程，並不像危機累積那樣有秩序。","於是他丟出那句被誤讀了幾十年的話：唯一不阻礙進步的原則是，怎樣都行。","它聽起來像在說什麼都可以，實際上是一句警告。他要說的是，沒有哪一條方法規則在所有情況下都有效。"],
  yours:["這條路的盡頭要看清楚。","我們把界線拆掉之後，庸醫進來了，占星術也進來了。任何人都可以說，你憑什麼講我不科學。","費耶阿本德自己就走到那裡。他公開為另類醫學辯護，也被同代人罵成反科學。","所以這一則放在這一組的最後。你可以拿走他的問題，不必接受他的答案。"],
  act:"今天遇到有人說「這不科學」，先在心裡問一句：你要的是可以驗證、可以被推翻、圈內人在解謎，還是你其實沒有標準。",
  src:"費耶阿本德（Paul Feyerabend），1924 年 1 月 13 日生於維也納，1994 年 2 月 11 日卒於蘇黎世。十六歲入德軍，1945 年 1 月東線西撤時中彈，子彈卡在脊椎，一度腰部以下癱瘓。<br><br>《反對方法》，時報出版，1996 年 6 月 15 日，周昌忠譯。原書 Against Method，1975。續作 Science in a Free Society，1978，無中譯。<br><br>「被同代人罵成反科學」指馬丁加德納（Martin Gardner）1983 年在 Skeptical Inquirer 的批評文。該文引 Science in a Free Society 第 194 頁的說法我未取得原頁，且加德納是敵意來源，故正文只寫可查的那一半。<br><br>來源：SEP 的 Feyerabend 條目、Wikipedia 的 Against Method 與 Science in a Free Society 條目、TheCollector、博客來、TAAZE。"},
@@ -278,7 +296,7 @@ const DATA = [
   who:"巴爾",
  open:["同一個爭論，有人想把「自然」講清楚一點。","於是他說，這個字本來的意思是如此如此，所以用在音響上就該是如此如此。","這一步跳得比多數人以為的還遠。"],
  answer:["巴爾的主張只有一句話。","詞的意思由用法決定，不由字根決定。","他舉的例子很直接。「敬拜」跟「奴僕」在希伯來文裡同一個字根，用起來卻沒有語義上的關聯。","他的正面主張來自語言學：語義的基本單位是句子，不是詞。"],
- against:["他的對手是一部當時人人都在用的工具書，基特爾的《新約神學辭典》。","那部辭典大量用字根推導詞義。他還抓出另一個毛病，並且給了名字：把一個詞的全部語義，整包塞進單一個用例。","這本書出版之後，整個聖經神學運動的語言學基礎被重估了一次。","限度也要講。有人認為他把話說得太滿，某些字根確實承載語義。安全的做法是，字根當線索，不當結論。"],
+ against:["他的對手是一部當時人人都在用的工具書，基特爾的《新約神學辭典》。","那部辭典大量用字根推導詞義。他還抓出另一個毛病，並且給了名字：把一個詞的全部語義，整包塞進單一個用例。","這本書出版之後，整個聖經神學運動的語言學基礎被重估了一次。","限度也要講，而且方向跟你可能以為的相反。","巴爾自己留了例外。遇到罕見、用例極少的詞，字源仍有參考價值，只是要用得極度保留。","華勒斯指出，真正的問題出在後來的人身上。很多教師把巴爾的話抽離脈絡，講成字源一律無用。","安全的做法是，字根當線索，不當結論。"],
  yours:["任何「這個詞本來的意思是」開頭的句子，都適用同一個檢查。","解經是最嚴重的一種，因為代價落在別人的信仰上。但日常爭論裡也一樣常見。","巴爾給的順序很具體。先看同一個人在別處怎麼用這個詞，再看這一次的上下文，字源排最後。"],
  act:"今天若用到一個詞的原意或字源，多查一步：同一個人在別的地方怎麼用它。",
  src:"巴爾（James Barr，1924-2006），蘇格蘭舊約學者，寫這本書時任愛丁堡大學舊約語言、文學與神學教授。<br><br>《The Semantics of Biblical Language》，牛津大學出版社，1961。繁中譯本查無。<br><br>下游的卡森（D. A. Carson）有繁中版：《再思解經錯謬》，校園書房，余德林、郭秀娟譯。全書五章，依序是詞彙錯謬、文法錯謬、邏輯錯謬、預設與歷史錯謬、結語。字根謬誤在第一章。<br><br>「把全部語義塞進單一用例」原名 illegitimate totality transfer。來源：Wikipedia 的 James Barr 條目、華勒斯（Daniel B. Wallace）部落格、9Marks 書評。「有人認為他說得太滿」屬我的訓練判斷，未查到具體出處。"},
@@ -286,7 +304,7 @@ const DATA = [
 {g:2, t:"換成看得見的動作",
  ext:[{k:"敲打",t:"挑一個你對別人的期待詞，寫三個看得見的行為",n:"寫不出三個，代表那個期待目前無法溝通，也無法檢討。"}],
   who:"布里奇曼",
- open:["那我們不要講「自然」了，改講清楚一點。","可是要講多清楚？清楚到什麼程度才算數？","有一個物理學家給過一個很極端的答案。"],
+ open:["那我們不要講「自然」了，改講清楚一點。","可是要講多清楚？清楚到什麼程度才算數？","物理學家布里奇曼給過一個很極端的答案。"],
  answer:["他說，我們懂一個概念，就是懂那一組測量它的操作。","沒有測量的方法，就等於不懂那個概念的意思。","他為這件事發明了一個詞：操作型定義。"],
  against:["他要處理的是相對論帶來的衝擊。","牛頓講的絕對時間、絕對的同時，在愛因斯坦之後被發現找不到對應的測量程序。那些詞好像在說什麼，其實沒有。","這條後來被批評得很重。批評的核心是，它把意義化約成測量，太窄了。","對你來說不必接受它當意義理論。只取它當溝通工具就好。要求把大詞換成看得見的行為，跟主張大詞只等於那些行為，是兩件事。"],
  yours:["任何你期待別人做到的事，都需要這一步。","認真、用心、有概念、負責任，這些詞聽起來清楚，其實沒有內容。","沒有換算成行為的期待，評價就會變成印象，而被評的人無從改起。"],
@@ -298,7 +316,7 @@ const DATA = [
   who:"萊爾",
  open:["同一場爭論，有人問：那這支喇叭到底好不好？","這個問題答不好，而且答不好的原因不在你。","它其實同時問了兩件不同類的事。"],
  answer:["萊爾給這種毛病取了名字：範疇錯置。","意思是把屬於某一類的概念，錯放到另一類去談。","他最有名的例子是這個。訪客看完了圖書館、實驗室、每一棟建築，然後問：那大學在哪裡？"],
- against:["他的對手是笛卡爾。","他把笛卡爾的心靈圖像叫做機器裡的幽靈，也就是把心當成一個藏在機械身體裡的非物質東西。","他的論證是，這個圖像把心跟身體放進同一類去比較，而它們本來就不是同一類。","有一件事要一起知道。萊爾自己的正面主張後來被廣泛拒絕，但範疇錯置這個工具留了下來。工具好用，不代表提出者的整套立場成立。"],
+ against:["他的對手是笛卡爾。","他把笛卡爾的心靈圖像叫做機器裡的幽靈，也就是把心當成一個藏在機械身體裡的非物質東西。","他的論證是，這個圖像把心跟身體放進同一類去比較，而它們本來就不是同一類。","有一件事要一起知道。萊爾的正面主張是，談心智狀態其實就是談行為傾向。說一個人聰明，講的是他在適當場合傾向做出某些事。","這一條後來被普特南、阿姆斯壯、瑟爾各自批評過。最直接的反例是，一個人可以正在快樂，卻沒有表現出任何快樂的行為。","範疇錯置這個工具倒是留了下來。工具好用，不代表提出者的整套立場成立。"],
  yours:["問「這支喇叭準不準」跟問「這支喇叭好不好聽」，是兩類問題。","兩個都值得問。混在同一句話裡問，會兩邊都答不好。","更麻煩的是，對方多半會以為你在否定他的感受。"],
  act:"今天遇到一個難答的問題，先確認它問的是哪一類的事。同時問了兩類就拆成兩題。",
  src:"萊爾（Gilbert Ryle，1900-1976），英國哲學家，牛津日常語言學派的代表人物。<br><br>《The Concept of Mind》，1949。繁中譯本查無。<br><br>他在書中說二元論不是細節上的錯，是一種特殊種類的大錯，原文為「It is, namely, a category mistake」。該書仍在著作權內，此處僅引短句。「機器裡的幽靈」原文 the dogma of the Ghost in the Machine。<br><br>來源：SEP 的 Ryle 條目與 Category Mistakes 條目、Philosophers' Magazine。"},
@@ -342,11 +360,11 @@ const DATA = [
  src:"洛克（John Locke，1632-1704），英國哲學家。《An Essay Concerning Human Understanding》，1689，第四卷第十七章第十九節。<br><br>他在該節列的第一種弱論證就是 argumentum ad verecundiam。verecundia 意為羞怯、敬畏。<br><br>他的原文說，這種論證是援引某些人的意見，這些人因才具、學識、地位、權力或其他緣故而享有名聲，在眾人心中建立了某種權威。原文為公版，譯文為我的直譯。<br><br>來源：多個 Essay 全文站點與 Siris 部落格比對。三種謬誤形態的分類是我依 SEP 相關條目的綜合，非洛克原文所列。"},
 
 {g:3, t:"從事實到應當之間",
- ext:[{k:"讀",t:"桑德爾《正義：一場思辨之旅》雅言，樂為良譯",n:"十週年新譯本。它做的正是同一個案例用三個框架各跑一遍。"}],
+ ext:[{k:"讀",t:"桑德爾《正義：一場思辨之旅》先覺，陳信宏譯",n:"要買 2018 年的十週年新譯本，桑德爾指定授權。雅言那版是樂為良譯的舊譯本，兩者不同，別買錯。它做的正是同一個案例用三個框架各跑一遍。"}],
   who:"休謨",
  open:["爭論走到最後，變成一場價值的爭吵，但沒有人講明白。","有人說：以前的人就是這樣熬過來的。所以現在的人也應該這樣。","休謨要問的就是中間那一步。"],
  answer:["他觀察到一件事。","道德的書都是先用一般方式推理一陣子，然後突然之間，句子裡的「是」全部換成了「應當」。","那個轉換不知不覺，卻關係重大。因為「應當」表達了一個新的關係，它必須被指出來、被解釋。","請注意他要的是說明，不是禁令。他沒有說不能從事實走到應當。他說的是，沒有人交代過那一步怎麼成立。"],
- against:["他要拆的是當時把道德建立在純粹理性推導上的做法。","一百多年後有人接著往下走。摩爾在 1903 年提出開放問題論證，方向相近但不等同。","摩爾針對的是把「善」定義成任何自然性質，而且他不認為這跟道德實在論衝突。"],
+ against:["他要拆的是當時把道德建立在純粹理性推導上的做法。","一百多年後有人接著往下走。摩爾提出開放問題論證，方向相近但不等同。","摩爾針對的是把「善」定義成任何自然性質，而且他不認為這跟道德實在論衝突。"],
  yours:["最耗時的爭論，往往不是事實有分歧，是價值排序不同。","休謨的用處不在禁止你跨過去，在逼你把中間那個價值前提說出來。","說出來之後，爭論的對象才會正確，而且不會變成對人的評價。"],
  act:"今天遇到一次意見不合，找出那個沒被說出口的價值前提，把它講出來。",
  src:"休謨（David Hume，1711-1776），蘇格蘭哲學家。《人性論》第三卷第一部第一節的最後一段。<br><br>繁中譯本：五南，2023 年 12 月 28 日，關文運譯，上下冊。另有麥田 1999，時國銘譯。<br><br>原文（公版）：「In every system of morality, which I have hitherto met with, I have always remark'd, that the author proceeds for some time in the ordinary way of reasoning... when of a sudden I am surpriz'd to find, that instead of the usual copulations of propositions, is, and is not, I meet with no proposition that is not connected with an ought, or an ought not.」<br><br>摩爾（G. E. Moore）《Principia Ethica》，1903，第十三節。來源：davidhume.org、Wikipedia、Britannica、五南官網。"},
@@ -364,7 +382,7 @@ const DATA = [
  ext:[{k:"敲打",t:"找一個你認定有效的改變，寫下兩個替代解釋",n:"寫不出替代解釋，代表你還沒真的檢查過它。"}],
   who:"彌爾",
  open:["你換了一條訊號線，覺得聲音變好了。","於是你說，因為換了線，所以聲音變好。","這句話可能對。問題在於，光憑這件事看不出來它對不對。"],
- answer:["彌爾的貢獻不在講「相關不等於因果」這句話。","他的貢獻是給了五個具體的程序，讓你能實際做因果推論。","五個分別是求同、差異、同異併用、剩餘、共變。","他的因果定義也比一般人講的精緻。原因指的是充分且必要條件的整個合取，而非單一個因素。"],
+ answer:["彌爾的貢獻不在講「相關不等於因果」這句話。","他的貢獻是給了五個具體的程序，讓你能實際做因果推論。","五個程序各自對應一種情境。","求同是找出所有案例共有的那一項。差異是兩個情境只差一項。同異併用是把前面兩個合起來用。","剩餘是扣掉已經知道原因的部分，看剩下什麼。共變是一邊變，另一邊跟著變。","他的因果定義也比一般人講的精緻。原因指的是那一整組充分且必要的條件全部加起來，而不是其中單一個因素。"],
  against:["他接的是休謨留下的難題。","休謨論證我們觀察不到因果連結本身，只觀察到兩件事恆常地一起出現。彌爾接受這個限制，但主張仍然可以有方法。","限度很實在。五法預設你已經列出了所有的候選原因。","真正的原因如果不在你的清單裡，五法會把功勞算到別人頭上。"],
  yours:["聲音變好可能是線材有效。也可能是你今天耳朵的狀態不同，是音量沒對齊，是你知道自己換了線。","少了替代解釋，這個結論會變成你下一次採購的依據，然後一路錯下去。"],
  act:"今天遇到一個「因為改了這個所以那個變好」，先想一個替代解釋，再問要看到什麼才能區分兩者。",
@@ -384,7 +402,7 @@ const DATA = [
  ext:[{k:"讀",t:"沃德原始報告，海軍分析中心 1980 年重印本",n:"DTIC 編號 ADA091073，可公開下載。你會發現那張著名的彈孔圖並不在裡面。"}],
   who:"沃德",
  open:["你去問那些說線材有差的人，他們憑什麼這樣說。","他們給了你很好的答案。","可是試過覺得沒差、然後就不再談這件事的人，不在你的樣本裡。"],
- answer:["二戰時有一位統計學家碰到同樣形態的問題。","只有飛回來的轟炸機可以檢查，被擊落的那些不在手上。","他的處理是用倖存者身上各部位的中彈次數，反推各部位的致命機率。","這套方法後來用在韓戰跟越戰的資料分析上。"],
+ answer:["二戰時，統計學家沃德碰到同樣形態的問題。","只有飛回來的轟炸機可以檢查，被擊落的那些不在手上。","他的處理是用倖存者身上各部位的中彈次數，反推各部位的致命機率。","這套方法後來用在韓戰跟越戰的資料分析上。"],
  against:["這裡要誠實講一件事。","常見的敘事版本有一張畫滿紅點的飛機圖，還有一句「把裝甲加在沒有彈孔的地方」的漂亮結論。","那些在他的公開報告裡沒有出現。數學核心是真的，說故事的方式是後人加的。","「倖存者偏誤」這個詞也不是他提的，是後來的命名。"],
  yours:["任何靠口碑累積起來的判斷，都帶這個偏誤。","器材評價、課程成效、某個方法有沒有用，全是同一個形態。","失敗的那些人不會發文，也不會上台。這不減損成功者說的話，但從那裡推導出來的一般結論會系統性偏向樂觀。"],
  act:"今天看到一組成功案例，問一句：沒成功的那些人在哪裡，我有沒有辦法找到他們。",
@@ -394,7 +412,7 @@ const DATA = [
  ext:[{k:"敲打",t:"下一次查資料，先下一輪反方向關鍵字再下正方向",n:"順序很重要。先查正面的，反面的就會被你已經形成的判斷過濾掉。"}],
   who:"沃森",
  open:["你想確認線材真的有差，於是你去找證據。","你找到了好幾篇心得。","問題是，你找的方式本身就有問題。"],
- answer:["1960 年有一個很小的實驗把這件事做出來了。","受試者要猜實驗者心裡的規則，實驗者只告訴他們 2-4-6 符合。","真正的規則是任何遞增數列，非常寬。","結果受試者提出的假說都比必要的更具體，而且他們只去測試符合自己假說的例子。","做這個實驗的人，順手替這個現象取了名字：確認偏誤。"],
+ answer:["六十多年前有一個很小的實驗把這件事做出來了。","受試者要猜實驗者心裡的規則，實驗者只告訴他們 2-4-6 符合。","真正的規則是任何遞增數列，非常寬。","結果受試者提出的假說都比必要的更具體，而且他們只去測試符合自己假說的例子。","做這個實驗的人，順手替這個現象取了名字：確認偏誤。"],
  against:["這一則跟第一組的波普爾直接相通。","波普爾說科學要主動去找能推翻自己的證據。沃森的實驗等於用心理學證明了人天生不做這件事。","後續有爭議。有人認為受試者的行為在某些條件下其實是理性的，因為只找正面例子的策略在多數真實環境裡夠用。","所以它不是單純的認知缺陷，是一個在特定環境下失效的策略。"],
  yours:["查資料、評估人選、判斷一件事該不該做，都會發生。","還有一層要注意：好抓的資料通常來自賣方或倡議方，難抓的才是使用者的實測。","證據集因此會有方向性的偏差，而你會誤以為那就是世界的樣子。"],
  act:"今天查任何東西時，多下一次相反方向的關鍵字。抓不到的那一邊，才是會推翻你的那一邊。",
@@ -431,8 +449,8 @@ const DATA = [
 
 {g:5, t:"這份清單本身被批評過",
  who:"漢布林",
- open:["現在回到那句話：你這是稻草人。或者你這是滑坡。","這些名詞查不到起源。而比起源更值得你知道的，是另一件事。","1970 年有一本書，把整份謬誤清單批評得體無完膚。"],
- answer:["那本書是自亞里斯多德以來第一本謬誤的完整學術專著。","作者把教科書裡的謬誤清單叫做標準處理法，然後說它是能想像得到的最陳腐、最陳舊、最教條的處理方式。","他還說那些清單墨守成規，既缺邏輯也缺歷史感，跟現代邏輯的其他部分幾乎沒有連結。","他的正面主張是：論證要放回對話裡看。謬誤是對話規則的違反，不是句子形式的缺陷。"],
+ open:["現在回到那句話：你這是稻草人。或者你這是滑坡。","滑坡指的是這種說法：一旦開了這個頭，就會一路滑到某個很糟的結局。","這些名詞查不到起源。而比起源更值得你知道的，是另一件事。","1970 年，漢布林出版了一本書，把整份謬誤清單批評得體無完膚。"],
+ answer:["那本書是自亞里斯多德以來第一本謬誤的完整學術專著。","他把教科書裡的謬誤清單叫做標準處理法，然後說它是能想像得到的最陳腐、最陳舊、最教條的處理方式。","他還說那些清單墨守成規，既缺邏輯也缺歷史感，跟現代邏輯的其他部分幾乎沒有連結。","他的正面主張是：論證要放回對話裡看。謬誤是對話規則的違反，不是句子形式的缺陷。"],
  against:["對你的實際意義只有一句話。","謬誤清單是好用的檢查表，不是判準。","指出某段話是滑坡，不等於證明它錯了。滑坡有時候會實現，關鍵永遠在提出的人有沒有交代中間每一環。","把清單當判決書用，本身就是他批評的那種用法。"],
  yours:["聽到滑坡式的擔憂，正確的回應是逐環追問，而非喊出謬誤的名字。","喊名字會讓對方閉嘴，追問才會讓討論往前走。","這兩件事在會議上的效果差非常多。"],
  act:"今天聽到滑坡式的擔憂，追問一句：從第二步到第三步，是什麼讓它必然發生。",
@@ -442,7 +460,7 @@ const DATA = [
  ext:[{k:"讀",t:"孔恩 1969 年後記，遠流繁中版有收",n:"倒數第二節，兩層回應要一起讀。"}],
   who:"孔恩被誤引",
  open:["同一場討論的最後，有人說：這只是典範轉移而已。","這句話聽起來很有學問，用起來像一張免死金牌。","而孔恩本人拒絕過這個用法。"],
- answer:["不可通約的意思是，兩套範式之間沒有共同的量尺可以拿來評比。","書出版之後，這一點被大量讀成「所以兩者一樣好」。","他在 1969 年的後記裡處理這個誤讀，回應分兩層。","第一層：如果相對主義意味著科學沒有進步，他不是相對主義者。他用演化樹的意象說明科學確實在往前長。","第二層：如果相對主義只是指沒有一種脫離理論的方式，去重建「真的在那裡」這類說法，那他承認自己是。"],
+ answer:["不可共量的意思是，兩套典範之間沒有共同的量尺可以拿來評比。也有人譯作不可通約。","書出版之後，這一點被大量讀成「所以兩者一樣好」。","這裡要先把一個詞講清楚。有一種主張認為，不同的說法之間沒有高下，誰也不比誰更接近真的，這種主張叫做相對主義。","他在 1969 年的後記裡處理這個誤讀，回應分兩層。","第一層：如果相對主義意味著科學沒有進步，他不是相對主義者。他用演化樹的意象說明科學確實在往前長。","第二層：如果相對主義只是指沒有一種脫離理論的方式，去重建「真的在那裡」這類說法，那他承認自己是。"],
  against:["只引第二層而不引第一層，就是斷章取義。","這在流行的科普轉述裡非常常見，包括中文圈的哲學影片。","引用孔恩之前，先確認你引的是哪一層。"],
  yours:["這一則的用處是防身。","有人拿孔恩論證「科學也只是一種信仰，所以我的說法一樣有效」，那是誤引。","你可以指出這一點，而且指出的方式是引他自己的後記，不必靠立場對嗆。"],
  act:"今天若聽到有人用「這只是典範轉移」為某個主張辯護，問一句：孔恩自己怎麼回應相對主義的指控。",
@@ -462,12 +480,90 @@ const DATA = [
 ];
 
 
+function clampIdx(v){ var n=parseInt(v,10); return (isFinite(n)&&n>=0&&n<DATA.length)?n:null; }
+function hashIdx(){ var m=/^#(\d+)$/.exec(location.hash||""); return m?clampIdx(m[1]-1):null; }
+
+var SEEN={}; try{ SEEN=JSON.parse(localStorage.getItem("mp_seen")||"{}")||{}; }catch(e){ SEEN={}; }
+function saveSEEN(){ try{ localStorage.setItem("mp_seen", JSON.stringify(SEEN)); }catch(e){} }
+
 var cur = 0;
-try{ var sv = localStorage.getItem("mp_pos"); if(sv!==null){ var n=parseInt(sv,10); if(n>=0&&n<DATA.length) cur=n; } }catch(e){}
+(function(){
+  var h=hashIdx();
+  if(h!==null){ cur=h; return; }
+  try{ var sv=clampIdx(localStorage.getItem("mp_pos")); if(sv!==null) cur=sv; }catch(e){}
+})();
+
+function renderJump(){
+  var el=document.getElementById("jump"); if(!el) return;
+  var h='<div class="jh">跳到某一則</div>', last=0, row="";
+  DATA.forEach(function(x,i){
+    if(x.g!==last){ if(row) h+='<div class="jrow">'+row+'</div>'; row=""; last=x.g; }
+    var cls = i===cur ? ' aria-current="true"' : (SEEN[i] ? ' class="seen"' : '');
+    row+='<a href="#'+(i+1)+'" data-i="'+i+'" title="第 '+(i+1)+' 則　'+x.t+'"'+cls+'>'+(i+1)+'</a>';
+  });
+  if(row) h+='<div class="jrow">'+row+'</div>';
+  el.innerHTML=h;
+  el.querySelectorAll("a").forEach(function(a){
+    a.onclick=function(e){ e.preventDefault(); go(parseInt(a.dataset.i,10)); window.scrollTo(0,0); };
+  });
+}
 
 
 var MK=[]; try{ MK=JSON.parse(localStorage.getItem("mp_marks")||"[]"); }catch(e){ MK=[]; }
 function saveMK(){ try{ localStorage.setItem("mp_marks", JSON.stringify(MK)); }catch(e){} }
+
+/* ===== 用上了計次 ===== */
+var USED=[]; try{ USED=JSON.parse(localStorage.getItem("mp_used")||"[]"); }catch(e){ USED=[]; }
+function saveUSED(){ try{ localStorage.setItem("mp_used", JSON.stringify(USED)); }catch(e){} }
+function todayStr(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function usedCount(i){ return USED.filter(function(u){return u.i===i;}).length; }
+function usedBlock(it){
+  var n=usedCount(cur);
+  var h='<div class="used"><button id="usedbtn">今天用上了</button><span class="ucount">'+
+        (n?('這一則已記 '+n+' 次'):'還沒記過')+'</span>';
+  if(n) h+='<button id="usedundo" class="mini">撤銷上一次</button>';
+  h+='</div>';
+  if(it.r){
+    var t={}; USED.forEach(function(u){ t[u.g]=(t[u.g]||0)+1; });
+    var rows="";
+    for(var g=1;g<=5;g++){
+      var gn=(typeof GROUPS!=="undefined"&&GROUPS[g]&&GROUPS[g].name)?('　'+GROUPS[g].name):'';
+      rows+='<tr><td>第 '+g+' 組'+gn+'</td><td>'+(t[g]||0)+'</td></tr>';
+    }
+    h+='<div class="tally"><div class="th">你實際按下的次數</div><table>'+rows+
+       '<tr class="tot"><td>合計</td><td>'+USED.length+'</td></tr></table>'+
+       '<p>這是你當下按的紀錄，不是事後回想。回想會偏向印象深的那幾次，也會偏向支持這份材料有用的例子，'+
+       '正是第十九與第二十則講的那兩件事。合計零次代表邊際效用低，三次以上才做第六組。</p></div>';
+  }
+  return h;
+}
+function wireUsed(){
+  var b=document.getElementById("usedbtn");
+  if(b) b.onclick=function(){ USED.push({i:cur,g:DATA[cur].g,d:todayStr()}); saveUSED(); render(); };
+  var u=document.getElementById("usedundo");
+  if(u) u.onclick=function(){
+    for(var k=USED.length-1;k>=0;k--){ if(USED[k].i===cur){ USED.splice(k,1); break; } }
+    saveUSED(); render();
+  };
+}
+(function(){
+  var st=document.createElement("style");
+  st.textContent=".used{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}"+
+   ".used button{font:inherit;font-size:13px;padding:7px 15px;border:1px solid var(--rule);"+
+   "background:var(--wash);color:var(--accent);border-radius:4px;cursor:pointer}"+
+   ".used button:hover{background:var(--surface)}"+
+   ".used button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}"+
+   ".used button.mini{font-size:12px;padding:5px 11px;color:var(--muted);background:transparent}"+
+   ".used .ucount{font-size:12.5px;color:var(--muted)}"+
+   ".tally{margin-top:18px;padding:16px 18px;border:1px solid var(--rule);border-radius:4px;background:var(--wash)}"+
+   ".tally .th{font-size:12px;letter-spacing:.06em;color:var(--accent);margin-bottom:9px}"+
+   ".tally table{width:100%;border-collapse:collapse;font-size:13.5px}"+
+   ".tally td{padding:6px 0;border-bottom:1px solid var(--hair);color:var(--ink)}"+
+   ".tally td:last-child{text-align:right;font-variant-numeric:tabular-nums}"+
+   ".tally tr.tot td{font-weight:600;border-bottom:none}"+
+   ".tally p{font-size:12.5px;color:var(--muted);margin:11px 0 0;line-height:1.8}";
+  (document.head||document.body||document.documentElement).appendChild(st);
+})();
 var pill=document.getElementById("pill"), np=document.getElementById("np"), editing=-1;
 function applyMarks(){
   var mine=MK.filter(function(m){return m.i===cur;});
@@ -554,6 +650,7 @@ function render(){
     h+='<section><h3>你會在哪裡遇到</h3>'+ps(it.yours)+'</section>';
   }
   h+='<div class="todo"><h3>今天的動作</h3><p>'+it.act+'</p></div>';
+  h+=usedBlock(it);
   if(it.ext&&it.ext.length){
     h+='<div class="ext"><h4>延伸</h4>';
     it.ext.forEach(function(e){
@@ -585,13 +682,19 @@ function render(){
     a.onclick=function(e){ e.preventDefault(); go(parseInt(a.dataset.i,10)); window.scrollTo(0,0); };
   });
   try{ localStorage.setItem("mp_pos", String(cur)); }catch(e){}
+  try{ history.replaceState(null,"","#"+(cur+1)); }catch(e){}
+  SEEN[cur]=1; saveSEEN(); renderJump();
   applyMarks();
   renderMarks();
+  wireUsed();
 }
 function go(n){ cur=n; render(); }
 document.getElementById("prev").onclick=function(){ if(cur>0){ go(cur-1); window.scrollTo(0,0);} };
 document.getElementById("next").onclick=function(){ if(cur<DATA.length-1){ go(cur+1); window.scrollTo(0,0);} };
 document.getElementById("reset").onclick=function(){ go(0); window.scrollTo(0,0); };
+window.addEventListener("hashchange",function(){
+  var h=hashIdx(); if(h!==null&&h!==cur){ go(h); window.scrollTo(0,0); }
+});
 document.addEventListener("keydown",function(e){
   if(e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
   if(e.key==="ArrowLeft" && cur>0) go(cur-1);
